@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func main() {
@@ -32,7 +33,12 @@ func main() {
 	files, err := ioutil.ReadDir(path)
 	checkIfErrNil(err)
 
+	limiter := NewLimiter(time.Minute, 10)
+
 	for _, file := range files {
+
+		limiter.Wait()
+
 		if file.IsDir() {
 			continue
 		}
@@ -67,6 +73,50 @@ func loadEnv() {
 	if os.Getenv("API_SECRET") == "" {
 		log.Fatal("API-Secret must be provided.")
 	}
+}
+
+type Limiter struct {
+	maxCount int
+	count    int
+	ticker   *time.Ticker
+	ch       chan struct{}
+}
+
+func (l *Limiter) run() {
+	for {
+		// if counter has reached 0: block until next tick
+		if l.count <= 0 {
+			<-l.ticker.C
+			l.count = l.maxCount
+		}
+
+		// otherwise:
+		// decrement 'count' each time a message is sent on channel,
+		// reset 'count' to 'maxCount' when ticker says so
+		select {
+		case l.ch <- struct{}{}:
+			l.count--
+
+		case <-l.ticker.C:
+			l.count = l.maxCount
+		}
+	}
+}
+
+func (l *Limiter) Wait() {
+	<-l.ch
+}
+
+func NewLimiter(duration time.Duration, count int) *Limiter {
+	l := &Limiter{
+		maxCount: count,
+		count:    count,
+		ticker:   time.NewTicker(duration),
+		ch:       make(chan struct{}),
+	}
+	go l.run()
+
+	return l
 }
 
 func request(path string, direction string, file fs.FileInfo) {
@@ -106,7 +156,7 @@ func filetypeAllowed(path string, file fs.FileInfo) bool {
 
 	buf, _ := ioutil.ReadFile(filepath.Join(path, file.Name()))
 	kind, _ := filetype.Match(buf)
-	
+
 	if !contains(allowed, kind.MIME.Value) {
 		return false
 	}
