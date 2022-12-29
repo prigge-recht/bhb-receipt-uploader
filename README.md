@@ -1,6 +1,6 @@
 # Buchhaltungsbutler Belegupload
 
-Mit diesem Kommandozeilenprogramm lassen Belege eines bestimmten Ordners an [Buchhaltungsbutler](https://www.buchhaltungsbutler.de/) übertragen.
+Mit diesem Kommandozeilenprogramm lassen sich Belege eines bestimmten Ordners an [Buchhaltungsbutler](https://www.buchhaltungsbutler.de/) übertragen.
 
 Die API-Zugangsdaten werden in der .env-Datei hinterlegt.
 
