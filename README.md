@@ -14,14 +14,14 @@ git pull https://github.com/rocramer/bhb-receipt-uploader.git
 go build
 
 # Ausführen
-./bhb-receipt-uploader -p=/pfad/zu/den/Ausgangsrechnungen/ -d=outbound
-./bhb-receipt-uploader -p=/pfad/zu/den/Eingangsrechnungen/ -d=inbound
+./bhb-receipt-uploader -p /pfad/zu/den/Ausgangsrechnungen/ -d outbound
+./bhb-receipt-uploader -p /pfad/zu/den/Eingangsrechnungen/ -d inbound
 ```
 
 ## Cronjob 
 Zur täglichen (oder häufigeren) Synchronisation kann ein Cronjob eingerichtet werden. Folgender Eintrag überträgt die Belege täglich um 02:00 Uhr (Pfadangaben anpassen!):
 
 ```
-0 2 * * * ./bhb-receipt-uploader -p=/pfad/zu/den/Ausgangsrechnungen/ -d=outbound
-0 2 * * * ./bhb-receipt-uploader -p=/pfad/zu/den/Eingangsrechnungen/ -d=inbound
+0 2 * * * ./bhb-receipt-uploader -p /pfad/zu/den/Ausgangsrechnungen/ -d outbound
+0 2 * * * ./bhb-receipt-uploader -p /pfad/zu/den/Eingangsrechnungen/ -d inbound
 ``
